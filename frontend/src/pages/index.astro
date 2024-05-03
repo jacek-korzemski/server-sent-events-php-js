@@ -1,0 +1,34 @@
+---
+import "./css/style.css";
+import MagicComponent from "./c/MagicComponent.svelte";
+---
+
+<html lang='en'>
+	<head>
+		<meta charset='utf-8' />
+		<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+		<meta name='viewport' content='width=device-width' />
+		<meta name='generator' content={Astro.generator} />
+		<title>Server Sent Events from PHP backend</title>
+	</head>
+	<body>
+		<div class='topbar'>
+			<div class='container'>
+				<h1>Test app - Playground - so I could understand SSE with PHP and JS</h1>
+			</div>
+		</div>
+		<div class='container'>
+			<div class='box'>
+				<h2>Playground</h2>
+				<p>
+					The case is: click the start button. Then, frontend will send request for SSE to backend. Backend will send a few
+					updates for about 2 minutes. After that time, backend should send some flag to stop current connection and start another
+					one. Additionally, I will try to secure frontend against broken connection, so if backend would stop sending data, then
+					frontend should restart connection.
+				</p>
+				<p>After clicking on start, the table below should start filling with data.</p>
+				<MagicComponent client:load />
+			</div>
+		</div>
+	</body>
+</html>
