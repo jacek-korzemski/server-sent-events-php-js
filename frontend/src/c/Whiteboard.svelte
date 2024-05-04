@@ -1,65 +1,90 @@
 <script lang="ts">
+	import { onMount, onDestroy } from "svelte";
+
 	let canvas: HTMLCanvasElement;
+	let ctx: CanvasRenderingContext2D;
+	let prevX: number;
+	let prevY: number;
+	let currX: number;
+	let currY: number;
+	let isDrawing = false;
+	let lineWidth = 10;
 
-	const randomInt = (min: number, max: number): number => Math.floor(Math.random() * (max - min + 1) + min);
-
-	const randomColor = (): string => `hsl(${randomInt(0, 360)}, 40%, 70%)`;
-
-	const draw = (node: HTMLCanvasElement): { destroy(): void } => {
-		const handlePointerDown = ({ clientX, clientY, currentTarget }: PointerEvent) => {
-			const ctx = node.getContext("2d");
+	const setupCanvas = () => {
+		if (canvas) {
+			ctx = canvas.getContext("2d") as CanvasRenderingContext2D;
 			if (!ctx) {
 				alert("Canvas is not supported in this browser 😥");
 				return;
 			}
 
-			const color = randomColor();
-
-			const draw = (x: number, y: number): void => {
-				const width = 2;
-				ctx.beginPath();
-				ctx.arc(x, y, width, 0, 2 * Math.PI, false);
-				ctx.fillStyle = color;
-				ctx.strokeStyle = color;
-				ctx.fill();
-				ctx.stroke();
-			};
-
-			draw(clientX - node.getBoundingClientRect().left, clientY - node.getBoundingClientRect().top);
-
-			const handlePointerMove = ({ clientX, clientY, currentTarget }: PointerEvent) => {
-				const target = currentTarget as HTMLCanvasElement;
-
-				draw(clientX - target.getBoundingClientRect().left, clientY - target.getBoundingClientRect().top);
-			};
-
-			const handlePointerUp = () => {
-				node.removeEventListener("pointermove", handlePointerMove);
-				document.removeEventListener("pointerup", handlePointerUp);
-			};
-
-			node.addEventListener("pointermove", handlePointerMove);
-			document.addEventListener("pointerup", handlePointerUp);
-		};
-
-		node.addEventListener("pointerdown", handlePointerDown);
-		return {
-			destroy() {
-				window.removeEventListener("pointerdown", handlePointerDown);
-			},
-		};
+			canvas.addEventListener("mousedown", handleMouseDown);
+			canvas.addEventListener("mousemove", handleMouseMove);
+			canvas.addEventListener("mouseup", handleMouseUp);
+			canvas.addEventListener("mouseleave", handleMouseLeave);
+			ctx.lineWidth = lineWidth;
+		}
 	};
 
-	const testButtonHandler = () => {
-		const context = canvas.getContext("2d");
-		console.log(canvas.toDataURL());
+	const handleMouseDown = (e: MouseEvent) => {
+		isDrawing = true;
+		[prevX, prevY] = [e.offsetX, e.offsetY];
 	};
+
+	const handleMouseMove = (e: MouseEvent) => {
+		if (!isDrawing) return;
+
+		currX = e.offsetX;
+		currY = e.offsetY;
+
+		drawSmoothCurve(prevX, prevY, currX, currY);
+
+		[prevX, prevY] = [currX, currY];
+	};
+
+	const handleMouseUp = () => {
+		isDrawing = false;
+	};
+
+	const handleMouseLeave = () => {
+		isDrawing = false;
+	};
+
+	const drawSmoothCurve = (x0: number, y0: number, x1: number, y1: number) => {
+		ctx.beginPath();
+		ctx.moveTo(x0, y0);
+		ctx.lineTo(x1, y1);
+		ctx.fill();
+		ctx.stroke();
+		ctx.closePath();
+	};
+
+	const changeLineWidth = (e: Event) => {
+		const target = e.target as HTMLInputElement;
+		lineWidth = +target.value;
+		if (ctx) {
+			ctx.lineWidth = lineWidth;
+		}
+	};
+
+	onMount(() => {
+		setupCanvas();
+	});
+
+	onDestroy(() => {
+		canvas.removeEventListener("mousedown", handleMouseDown);
+		canvas.removeEventListener("mousemove", handleMouseMove);
+		canvas.removeEventListener("mouseup", handleMouseUp);
+		canvas.removeEventListener("mouseleave", handleMouseLeave);
+	});
 </script>
 
 <main>
-	<canvas bind:this={canvas} use:draw width={1920} height={1080} />
+	<canvas bind:this={canvas} width={1920} height={1080} />
 </main>
-<button class="btn btn-info" on:click={testButtonHandler}>Console.log(canvas)</button>
+<input type="range" min="1" max="10" bind:value={lineWidth} on:input={changeLineWidth} />
+
+<!-- <button class="btn btn-info" on:click={testButtonHandler}>Console.log(canvas)</button> -->
 
 <style>
 	main {
