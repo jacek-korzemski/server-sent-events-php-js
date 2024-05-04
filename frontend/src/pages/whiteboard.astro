@@ -1,0 +1,33 @@
+---
+import "../css/style.css";
+import WhiteboardComponent from "../c/Whiteboard.svelte";
+---
+
+<html lang='en'>
+	<head>
+		<meta charset='utf-8' />
+		<link rel='icon' type='image/svg+xml' href='/favicon.svg' />
+		<meta name='viewport' content='width=device-width' />
+		<meta name='generator' content={Astro.generator} />
+		<title>Whiteboard with Server Sent Events from PHP backend</title>
+	</head>
+	<body>
+		<div class='topbar'>
+			<div class='container'>
+				<h1>Whiteboard tests and playground</h1>
+			</div>
+		</div>
+		<div class='container'>
+			<div class='box'>
+				<WhiteboardComponent client:only />
+				<p class='margin-top'>You can also try a <a href='/'>simple events</a> sent from server.</p>
+			</div>
+		</div>
+	</body>
+</html>
+
+<style>
+	.margin-top {
+		margin-top: 15px;
+	}
+</style>

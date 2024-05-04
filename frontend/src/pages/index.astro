@@ -1,6 +1,6 @@
 ---
-import "./css/style.css";
-import MagicComponent from "./c/MagicComponent.svelte";
+import "../css/style.css";
+import MagicComponent from "../c/MagicComponent.svelte";
 ---
 
 <html lang='en'>
@@ -28,7 +28,14 @@ import MagicComponent from "./c/MagicComponent.svelte";
 				</p>
 				<p>After clicking on start, the table below should start filling with data.</p>
 				<MagicComponent client:load />
+				<p class='margin-top'>You can also try a <a href='/whiteboard'>whiteboard</a> playground.</p>
 			</div>
 		</div>
 	</body>
 </html>
+
+<style>
+	.margin-top {
+		margin-top: 15px;
+	}
+</style>
