@@ -16,7 +16,7 @@
 			const color = randomColor();
 
 			const draw = (x: number, y: number): void => {
-				const width = 8;
+				const width = 2;
 				ctx.beginPath();
 				ctx.arc(x, y, width, 0, 2 * Math.PI, false);
 				ctx.fillStyle = color;
@@ -66,5 +66,6 @@
 		max-width: 100%;
 		max-height: 600px;
 		overflow: scroll;
+		border: 1px solid rgba(0, 0, 0, 0.4);
 	}
 </style>
